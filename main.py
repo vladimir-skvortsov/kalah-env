@@ -1,10 +1,7 @@
 import os
 import importlib
 import pandas as pd
-from collections import defaultdict
-from itertools import combinations
-
-# Assuming your game module is named `kalah`
+import itertools
 from kalah import KalahGame
 
 def load_agents(agents_dir):
@@ -29,18 +26,18 @@ def calculate_sonneborn_berger(scores_df):
 
   return sonneborn_berger_scores
 
-def main(agents_dir):
+def main(agents_dir, games_num=20):
   agents = load_agents(agents_dir)
   scores_df = pd.DataFrame(index=agents.keys(), columns=agents.keys())
   scores_df = scores_df.infer_objects(copy=False).fillna(0)
 
-  for pair1, pair2 in combinations(agents.items(), 2):
+  for pair1, pair2 in itertools.combinations(agents.items(), 2):
     agent_name1, agent1 = pair1
     agent_name2, agent2 = pair2
 
     sum_score = 0
 
-    for game_index in range(10):
+    for game_index in range(games_num):
       game = KalahGame(agent1, agent2)
       result = game.play(current_player=game_index % 2)
 
@@ -56,8 +53,6 @@ def main(agents_dir):
     else:
       score = 0.5
 
-    print(agent_name1, agent_name2, sum_score, score),
-
     scores_df.loc[agent_name1, agent_name2] = score
     scores_df.loc[agent_name2, agent_name1] = 1 - score
 
@@ -70,4 +65,4 @@ def main(agents_dir):
       f.write(f"{bot_name}: {sb_score}\n")
 
 if __name__ == '__main__':
-  main('agents')
+  main('agents', games_num=20)
