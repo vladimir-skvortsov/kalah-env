@@ -1,5 +1,3 @@
-from state import State
-
 class KalahGame:
   def __init__(self, agent1, agent2):
     self.agents = [agent1, agent2]
@@ -74,7 +72,16 @@ class KalahGame:
       self.turn += 1
       self.switch_player()
 
-    return 1 if self.board[6] > self.board[13] else (-1 if self.board[6] < self.board[13] else 0)
+    print(self.board)
+
+    # agent1 won
+    if self.board[6] > self.board[13]:
+      return 0
+    # agent2 won
+    if self.board[6] < self.board[13]:
+      return 1
+    # draw
+    return 0.5
 
 
 
