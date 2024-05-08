@@ -29,5 +29,5 @@ def minimax(state, depth, maximize=True):
   return best_score, best_move
 
 def get_move(state):
-  _, move = minimax(state, 6)
+  _, move = minimax(state, 8)
   return move
