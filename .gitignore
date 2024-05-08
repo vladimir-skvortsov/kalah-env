@@ -1,6 +1,6 @@
 **/__pycache__
+.vscode
+*.pyc
 
-bot_scores.csv
-sonneborn_berger.txt
-
+grade.json
 test.py

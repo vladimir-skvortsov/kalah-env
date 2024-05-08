@@ -1,8 +1,8 @@
 import os
 import importlib
-import pandas as pd
-import itertools
+import json
 from kalah import KalahGame
+from test import get_move as student_agent
 
 def load_agents(agents_dir):
   agents = {}
@@ -18,51 +18,39 @@ def load_agents(agents_dir):
 
   return agents
 
-def calculate_sonneborn_berger(scores_df):
-  sonneborn_berger_scores = {}
-
-  for bot in scores_df.columns:
-    sonneborn_berger_scores[bot] = sum(opponent_score * score for opponent_score, score in zip(scores_df.sum(), scores_df.loc[bot]))
-
-  return sonneborn_berger_scores
-
 def main(agents_dir, games_num=20):
   agents = load_agents(agents_dir)
-  scores_df = pd.DataFrame(index=agents.keys(), columns=agents.keys())
-  scores_df = scores_df.infer_objects(copy=False).fillna(0)
+  grade = 0
 
-  for pair1, pair2 in itertools.combinations(agents.items(), 2):
-    agent_name1, agent1 = pair1
-    agent_name2, agent2 = pair2
+  for agent_name, agent in agents.items():
+    score = 0
 
-    sum_score = 0
-
-    for game_index in range(games_num):
-      game = KalahGame(agent1, agent2)
-      result = game.play(current_player=game_index % 2)
+    for _ in range(games_num // 2):
+      game = KalahGame(student_agent, agent)
+      result = game.play()
 
       if result == 0:
-        sum_score += 1
+        score += 1
       elif result == 1:
-        sum_score -= 1
+        score -= 1
 
-    if sum_score > 0:
-      score = 1
-    elif sum_score < 0:
-      score = 0
-    else:
-      score = 0.5
+    for _ in range(games_num // 2):
+      game = KalahGame(agent, student_agent)
+      result = game.play()
 
-    scores_df.loc[agent_name1, agent_name2] = score
-    scores_df.loc[agent_name2, agent_name1] = 1 - score
+      if result == 0:
+        score -= 1
+      elif result == 1:
+        score += 1
 
-  sonneborn_berger_scores = calculate_sonneborn_berger(scores_df)
+    if score > 0:
+      print(f'Student\'s agent won {agent_name}', score)
+      grade += 1
 
-  print(scores_df)
-  scores_df.to_csv('bot_scores.csv')
-  with open('sonneborn_berger.txt', 'w') as f:
-    for bot_name, sb_score in sonneborn_berger_scores.items():
-      f.write(f"{bot_name}: {sb_score}\n")
+  grade_dict = {'grade': grade}
+
+  with open('grade.json', 'w') as json_file:
+    json.dump(grade_dict, json_file)
 
 if __name__ == '__main__':
   main('agents', games_num=20)
