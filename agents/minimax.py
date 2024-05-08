@@ -1,3 +1,5 @@
+# Credit: https://www.cs.columbia.edu/~sedwards/classes/2022/4995-fall/proposals/Kalah.pdf
+
 def turn(pit, board, player):
   board_cpy = board.copy()
 
