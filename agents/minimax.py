@@ -1,33 +1,93 @@
-import copy
+def turn(pit, board, player):
+  board_cpy = board.copy()
 
-def is_game_over(state):
-  return sum(state[0:6]) == 0 or sum(state[7:13]) == 0
+  last_pit = -1
 
-def evaluate_state(state):
-  return state[6] - state[13]
+  curr_pit = (pit + 1) % 14
+  count = board_cpy[pit]
+  board_cpy[pit] = 0
+  while count != 0:
+    # if curr_pit is not opponent's store, deposit
+    if not ((player == 0 and curr_pit == 13) or
+        (player == 1 and curr_pit == 6)):
+      board_cpy[curr_pit] += 1
+      count -= 1
 
-def minimax(state, depth, maximize=True):
-  if depth == 0 or is_game_over(state):
-    return evaluate_state(state), None
+      last_pit = curr_pit
+    curr_pit = (curr_pit + 1) % 14
 
-  best_score = -float('inf') if maximize else float('inf')
-  best_move = None
-  for i in range(6):
-    if state[i] == 0:
-      continue
+  # if the last pit was empty and is ours and the opposite pit is not empty,
+  # then steal all seeds
+  if board_cpy[last_pit] == 1 and board_cpy[12 - last_pit] != 0:
+    if 0 <= last_pit and last_pit <= 5 and player == 0:
+      board_cpy[6] += board_cpy[last_pit] + board_cpy[12 - last_pit]
+      board_cpy[12 - last_pit] = 0
+      board_cpy[last_pit] = 0
+    elif 7 <= last_pit and last_pit <= 13 and player == 1:
+      board_cpy[13] += board_cpy[last_pit] + board_cpy[12 - last_pit]
+      board_cpy[12 - last_pit] = 0
+      board_cpy[last_pit] = 0
 
-    new_state = copy.deepcopy(state)
-    # Execute the move
-    new_state[i] = 0
-    score, _ = minimax(new_state, depth-1, not maximize)
+  # if the last pit was our store, we can move again
+  move_again = False
+  if (last_pit == 6 and player == 0) or (last_pit == 13 and player == 1):
+    move_again = True
+  return move_again, board_cpy
 
-    if maximize and score > best_score:
-      best_score, best_move = score, i
-    elif not maximize and score < best_score:
-      best_score, best_move = score, i
+def successors(board, player):
+  if player == 0:
+    pits = list(range(0, 6))
+  else:
+    pits = list(range(7, 13))
 
-  return best_score, best_move
+  successor_li = []
+  for pit in pits:
+    if board[pit] != 0:
+      move_again, board_cpy = turn(pit, board, player)
+      successor_li.append((pit, move_again, board_cpy))
+
+  return successor_li
+
+def max_value(board, k, a, b):
+  if k == 0 or is_terminal(board):
+    return utility(board), None
+  v = -float('inf')
+  for succ in successors(board, 0):
+    pit, move_again, board_cpy = succ
+    if move_again:
+      v2, _ = max_value(board_cpy, k - 1, a, b)
+    else:
+      v2, _ = min_value(board_cpy, k - 1, a, b)
+    if v2 > v:
+      v, move = v2, pit
+      a = max(a, v)
+    if v >= b:
+      return v, move
+  return v, move
+
+def min_value(board, k, a, b):
+  if k == 0 or is_terminal(board):
+    return utility(board), None
+  v = float('inf')
+  for succ in successors(board, 1):
+    pit, move_again, board_cpy = succ
+    if move_again:
+      v2, _ = min_value(board_cpy, k - 1, a, b)
+    else:
+      v2, _ = max_value(board_cpy, k - 1, a, b)
+    if v2 < v:
+      v, move = v2, pit
+      b = min(b, v)
+    if v <= a:
+      return v, move
+  return v, move
+
+def is_terminal(board):
+  return sum(board[0:6]) == 0 or sum(board[7:13]) == 0
+
+def utility(board):
+  return sum(board[0:7]) - sum(board[7:14])
 
 def get_move(state):
-  _, move = minimax(state, 8)
+  _, move = max_value(state, 6, -float('inf'), float('inf'))
   return move
