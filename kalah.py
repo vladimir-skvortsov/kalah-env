@@ -50,18 +50,18 @@ class KalahGame:
     while max(self.board[0:6]) > 0 and max(self.board[7:13]) > 0:
       agent = self.agents[self.current_player]
       valid_moves = self.get_valid_moves()
-
       board = self.get_agent_board_representation()
 
-      try:
-        chosen_move = agent(board)
-      except Exception as e:
-        print(e)
-        return 1 - self.current_player
+      chosen_move = agent(board)
 
       if not chosen_move in valid_moves:
-        print('chosen_move', chosen_move)
-        return 1 - self.current_player
+        exception_message = (
+          'Invalid move\n'
+          f'State: {board}\n'
+          f'Valid moves: {valid_moves}\n'
+          f'Bot choose: {chosen_move}'
+        )
+        raise Exception(exception_message)
 
       chosen_move = self.get_chosen_move_representation(chosen_move)
       last_seed_index = self.move_seeds(chosen_move)

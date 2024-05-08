@@ -18,6 +18,11 @@ def load_agents(agents_dir):
 
   return agents
 
+def save_grade(grade):
+  grade_dict = {'grade': grade}
+  with open('grade.json', 'w') as json_file:
+    json.dump(grade_dict, json_file)
+
 def main(agents_dir, games_num=20):
   agents = load_agents(agents_dir)
   grade = 0
@@ -25,32 +30,33 @@ def main(agents_dir, games_num=20):
   for agent_name, agent in agents.items():
     score = 0
 
-    for _ in range(games_num // 2):
-      game = KalahGame(student_agent, agent)
-      result = game.play()
+    try:
+      for _ in range(games_num // 2):
+        game = KalahGame(student_agent, agent)
+        result = game.play()
 
-      if result == 0:
-        score += 1
-      elif result == 1:
-        score -= 1
+        if result == 0:
+          score += 1
+        elif result == 1:
+          score -= 1
 
-    for _ in range(games_num // 2):
-      game = KalahGame(agent, student_agent)
-      result = game.play()
+      for _ in range(games_num // 2):
+        game = KalahGame(agent, student_agent)
+        result = game.play()
 
-      if result == 0:
-        score -= 1
-      elif result == 1:
-        score += 1
+        if result == 0:
+          score -= 1
+        elif result == 1:
+          score += 1
+    except Exception as exception:
+      save_grade(str(exception))
+      return
 
     if score > 0:
       print(f'Student\'s agent won {agent_name}', score)
       grade += 1
 
-  grade_dict = {'grade': grade}
-
-  with open('grade.json', 'w') as json_file:
-    json.dump(grade_dict, json_file)
+  save_grade(grade)
 
 if __name__ == '__main__':
   main('agents', games_num=20)
