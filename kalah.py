@@ -45,7 +45,6 @@ class KalahGame:
       return chosen_move
     return 7 + chosen_move
 
-
   def play(self):
     while max(self.board[0:6]) > 0 and max(self.board[7:13]) > 0:
       agent = self.agents[self.current_player]
