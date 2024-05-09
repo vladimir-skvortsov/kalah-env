@@ -55,10 +55,13 @@ def main(agents_dir, games_num=20):
     if score > 0:
       print(f'Student\'s agent won {agent_name} with score {score}')
       grade += 1
+    elif score == 0:
+      print(f'Student\'s agent played in a draw with {agent_name}')
+      grade += 0.5
     else:
       print(f'Student\'s agent lost {agent_name} with score {score}')
 
-  save_grade(grade)
+  save_grade(int(grade))
 
 if __name__ == '__main__':
   main('agents', games_num=20)
