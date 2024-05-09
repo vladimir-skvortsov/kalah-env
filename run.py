@@ -53,8 +53,10 @@ def main(agents_dir, games_num=20):
       return
 
     if score > 0:
-      print(f'Student\'s agent won {agent_name}', score)
+      print(f'Student\'s agent won {agent_name} with score {score}')
       grade += 1
+    else:
+      print(f'Student\'s agent lost {agent_name} with score {score}')
 
   save_grade(grade)
 
