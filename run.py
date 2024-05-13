@@ -1,5 +1,5 @@
 import os
-import importlib
+from importlib.util import spec_from_file_location, module_from_spec
 import json
 from kalah import KalahGame
 from task import get_move as student_agent
@@ -11,8 +11,8 @@ def load_agents(agents_dir):
     if agent_file.endswith('.py'):
       name = agent_file[:-3]
       abs_path = os.path.join(agents_dir, agent_file)
-      spec = importlib.util.spec_from_file_location(name, abs_path)
-      module = importlib.util.module_from_spec(spec)
+      spec = spec_from_file_location(name, abs_path)
+      module = module_from_spec(spec)
       spec.loader.exec_module(module)
       agents[name] = module.get_move
 
