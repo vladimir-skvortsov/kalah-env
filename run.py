@@ -2,7 +2,7 @@ import os
 import importlib
 import json
 from kalah import KalahGame
-from test import get_move as student_agent
+from task import get_move as student_agent
 
 def load_agents(agents_dir):
   agents = {}
