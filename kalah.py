@@ -62,6 +62,7 @@ class KalahGame:
         )
         raise Exception(exception_message)
 
+      chosen_move = int(chosen_move)
       chosen_move = self.get_chosen_move_representation(chosen_move)
       last_seed_index = self.move_seeds(chosen_move)
 
