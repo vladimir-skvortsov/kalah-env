@@ -53,7 +53,7 @@ class KalahGame:
 
       chosen_move = agent(board)
 
-      if not isinstance(chosen_move, (int, float)) or not chosen_move in valid_moves:
+      if not chosen_move in valid_moves:
         exception_message = (
           'Invalid move\n'
           f'State: {board}\n'
@@ -62,7 +62,6 @@ class KalahGame:
         )
         raise Exception(exception_message)
 
-      chosen_move = int(chosen_move)
       chosen_move = self.get_chosen_move_representation(chosen_move)
       last_seed_index = self.move_seeds(chosen_move)
 
