@@ -53,7 +53,7 @@ class KalahGame:
 
       chosen_move = agent(board)
 
-      if not chosen_move in valid_moves:
+      if not isinstance(chosen_move, (int, float)) or not chosen_move in valid_moves:
         exception_message = (
           'Invalid move\n'
           f'State: {board}\n'
